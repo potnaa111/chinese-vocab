@@ -66,12 +66,15 @@ input.inp:focus,input.inp.hi{border-color:var(--accent);}
       <button onclick="nav('settings')" style="background:none;border:2px solid var(--border);border-radius:12px;padding:8px 10px;cursor:pointer;font-size:16px;">⚙️</button>
     </div>
   </div>
-  <div class="grid2" style="margin:24px 0 32px;">
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:24px 0 32px;">
     <button class="bigbtn" id="home-add-btn" onclick="nav('add-word')" style="background:#3b82f6;box-shadow:0 4px 16px #3b82f655;">
-      <span style="font-size:32px;">✏️</span><span style="font-weight:800;font-size:15px;">Add Word</span><span style="font-size:12px;opacity:.8;">to your playlist</span>
+      <span style="font-size:28px;">✏️</span><span style="font-weight:800;font-size:13px;">Add Word</span>
     </button>
-    <button class="bigbtn" onclick="quizAll()" style="background:#8b5cf6;box-shadow:0 4px 16px #8b5cf655;">
-      <span style="font-size:32px;">🧠</span><span style="font-weight:800;font-size:15px;">Quiz All</span><span id="home-word-count" style="font-size:12px;opacity:.8;">0 words</span>
+    <button class="bigbtn" onclick="quickStart('flash')" style="background:#14b8a6;box-shadow:0 4px 16px #14b8a655;">
+      <span style="font-size:28px;">🃏</span><span style="font-weight:800;font-size:13px;">Flashcards</span><span id="home-word-count" style="font-size:11px;opacity:.8;">0 words</span>
+    </button>
+    <button class="bigbtn" onclick="quickStart('quiz')" style="background:#8b5cf6;box-shadow:0 4px 16px #8b5cf655;">
+      <span style="font-size:28px;">🧠</span><span style="font-weight:800;font-size:13px;">Quiz</span><span style="font-size:11px;opacity:.8;">All words</span>
     </button>
   </div>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
@@ -478,6 +481,16 @@ async function syncNow(){
   document.getElementById('home-sync-label').textContent='☁️ Syncing…';
   try{ await cloudPush(); document.getElementById('home-sync-label').innerHTML=`☁️ <strong>${DB.syncUser}</strong> ✅`; }
   catch{ document.getElementById('home-sync-label').textContent='❌ Sync failed'; }
+}
+
+function quickStart(mode){
+  if(DB.words.length<3){ alert('Add at least 3 words first!'); return; }
+  sessionWords=shuffle(DB.words);
+  sessionAllWords=DB.words;
+  sessionMode=mode; sessionIdx=0; sessionResults=[];
+  pickTitle='All Words 🌍';
+  if(mode==='flash') startFlash();
+  else startQuiz();
 }
 
 function quizAll(){
