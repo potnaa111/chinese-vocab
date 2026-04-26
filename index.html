@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>🈶 Chinese Vocab</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;background:var(--bg);color:var(--text);transition:background .3s;}
+  input{font-family:inherit;}
+  button{font-family:inherit;}
+  :root{
+    --bg:#f8fafc;--card:#ffffff;--text:#1e293b;--sub:#64748b;--border:#e2e8f0;--accent:#3b82f6;
+  }
+  @media(prefers-color-scheme:dark){
+    :root{--bg:#0f172a;--card:#1e293b;--text:#f1f5f9;--sub:#94a3b8;--border:#334155;--accent:#3b82f6;}
+  }
+  #app{max-width:480px;margin:0 auto;padding:24px 16px 64px;}
+  .card{background:var(--card);border-radius:20px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.08);margin-bottom:12px;}
+  .btn{display:inline-block;border-radius:14px;font-weight:700;padding:14px 24px;font-size:16px;cursor:pointer;border:2px solid var(--accent);background:var(--accent);color:#fff;transition:all .15s;width:auto;}
+  .btn.full{width:100%;text-align:center;}
+  .btn.sm{padding:8px 18px;font-size:14px;}
+  .btn.outline{background:transparent;color:var(--accent);}
+  .btn.red{background:#ef4444;border-color:#ef4444;}
+  .btn.green{background:#22c55e;border-color:#22c55e;}
+  .btn.purple{background:#8b5cf6;border-color:#8b5cf6;}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .topbar{display:flex;align-items:center;gap:12px;margin-bottom:24px;}
+  .topbar h2{margin:0;font-size:20px;font-weight:800;flex:1;}
+  .back-btn{background:none;border:none;font-size:24px;cursor:pointer;color:var(--text);padding:4px;}
+  label.lbl{display:block;font-size:13px;font-weight:700;color:var(--sub);margin-bottom:6px;margin-top:16px;}
+  input.inp{width:100%;padding:12px 14px;border-radius:12px;font-size:16px;border:2px solid var(--border);background:var(--bg);color:var(--text);outline:none;transition:border .2s;}
+  input.inp:focus{border-color:var(--accent);}
+  input.inp.hi{border-color:var(--accent);}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .bigbtn{color:#fff;border:none;border-radius:20px;padding:20px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:100%;}
+  .bigbtn .icon{font-size:32px;}
+  .bigbtn .label{font-weight:800;font-size:15px;}
+  .bigbtn .sub{font-size:12px;opacity:.8;}
+  .pl-item{background:var(--card);border:none;border-radius:18px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.07);text-align:left;width:100%;margin-bottom:12px;}
+  .pl-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+  .pl-arrow{margin-left:auto;color:var(--sub);font-size:20px;}
+  .prog-bar{height:6px;background:var(--border);border-radius:99px;margin-bottom:24px;}
+  .prog-fill{height:6px;border-radius:99px;transition:width .3s;}
+  .flashcard{min-height:220px;background:var(--card);border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;margin-bottom:20px;box-shadow:0 4px 20px rgba(0,0,0,.1);padding:24px;user-select:none;text-align:center;}
+  .choice-btn{background:var(--card);border:2px solid var(--border);color:var(--text);border-radius:16px;padding:16px 20px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center;width:100%;margin-bottom:10px;font-size:16px;}
+  .choice-btn.correct{background:#22c55e22;border-color:#22c55e;color:#22c55e;}
+  .choice-btn.wrong{background:#ef444422;border-color:#ef4444;color:#ef4444;}
+  .hint-box{background:var(--bg);border-radius:12px;padding:10px 14px;margin-bottom:8px;font-size:13px;color:var(--sub);border:1px dashed var(--border);}
+  .sync-status{font-size:13px;margin-top:4px;}
+  .word-item{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;}
+  .del-btn{background:none;border:none;font-size:18px;cursor:pointer;color:#ef4444;}
+  .color-dot{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;flex-shrink:0;}
+  .emoji-btn{font-size:24px;background:transparent;border:2px solid transparent;border-radius:10px;padding:4px;cursor:pointer;}
+  .picker-dropdown{background:var(--card);border:2px solid var(--border);border-radius:14px;margin-top:4px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.1);}
+  .picker-item{width:100%;background:transparent;border:none;padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;text-align:left;color:var(--text);font-weight:700;}
+  .picker-item.active{background:var(--bg);}
+  .mode-btn{padding:16px 10px;border-radius:14px;border:2px solid var(--border);background:var(--bg);color:var(--text);font-weight:700;font-size:15px;cursor:pointer;width:100%;}
+  .mode-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .count-btn{padding:10px 16px;border-radius:12px;border:2px solid var(--border);background:var(--bg);color:var(--text);font-weight:700;cursor:pointer;margin:4px;}
+  .count-btn.active{background:#8b5cf6;border-color:#8b5cf6;color:#fff;}
+  .color-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+  .preview-box{border-radius:14px;padding:16px;margin-bottom:16px;border:2px solid var(--border);}
+  .hidden{display:none!important;}
+  .screen{display:none;}
+  .screen.active{display:block;}
+  .tag{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--sub);margin-bottom:12px;}
+  .big-char{font-size:52px;font-weight:900;}
+  .med-char{font-size:28px;font-weight:900;}
+  .result-pct{font-size:48px;font-weight:900;}
+  .result-emoji{font-size:64px;margin-bottom:8px;}
+  .weak-char{font-size:24px;font-weight:900;}
+  .flip-hint{margin-top:20px;color:var(--sub);font-size:14px;}
+  .pinyin-line{font-size:18px;margin-bottom:4px;}
+  .eng-line{font-size:16px;margin-bottom:2px;}
+  .thai-line{font-size:16px;color:var(--sub);}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- HOME -->
+<div id="screen-home" class="screen active">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+    <div>
+      <h1 id="home-title" style="font-size:28px;font-weight:900;color:var(--text);">🈶 Chinese Vocab</h1>
+      <p id="home-sync-label" class="sync-status" style="color:var(--sub);"></p>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button id="btn-sync-now" onclick="syncNow()" style="display:none;background:none;border:2px solid var(--border);border-radius:12px;padding:8px 10px;cursor:pointer;font-size:16px;">☁️</button>
+      <button onclick="nav('settings')" style="background:none;border:2px solid var(--border);border-radius:12px;padding:8px 10px;cursor:pointer;font-size:16px;">⚙️</button>
+    </div>
+  </div>
+  <div class="grid2" style="margin:24px 0 32px;">
+    <button class="bigbtn" id="home-add-btn" onclick="nav('add-word')" style="background:#3b82f6;box-shadow:0 4px 16px #3b82f655;">
+      <span class="icon">✏️</span><span class="label">Add Word</span><span class="sub">to your playlist</span>
+    </button>
+    <button class="bigbtn" onclick="quizAll()" style="background:#8b5cf6;box-shadow:0 4px 16px #8b5cf655;">
+      <span class="icon">🧠</span><span class="label">Quiz All</span><span id="home-word-count" class="sub">0 words</span>
+    </button>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <h3 style="color:var(--text);">My Playlists</h3>
+    <button class="btn sm" onclick="nav('create-playlist')">+ New</button>
+  </div>
+  <div id="playlist-list"></div>
+</div>
+
+<!-- SETTINGS -->
+<div id="screen-settings" class="screen">
+  <div class="topbar"><button class="back-btn" onclick="nav('home')">←</button><h2>⚙️ Settings</h2></div>
+  <div class="card">
+    <h3 style="margin-bottom:8px;color:var(--text);">☁️ Firebase Sync</h3>
+    <p style="font-size:13px;color:var(--sub);margin-bottom:12px;">Enter a unique code. Use the <strong>same code</strong> on all your devices to share words and playlists.</p>
+    <label class="lbl" style="margin-top:0;">Your sync code</label>
+    <input id="sync-input" class="inp" placeholder="e.g. phod_chinese_2026"/>
+    <div id="sync-msg" style="font-size:13px;margin:8px 0;min-height:20px;"></div>
+    <button class="btn full" id="sync-connect-btn" onclick="connectSync()" style="margin-bottom:8px;">Connect &amp; Sync</button>
+    <button class="btn full outline" id="sync-push-btn" onclick="pushToCloud()" style="display:none;">Push latest to cloud ☁️</button>
+  </div>
+  <div class="card">
+    <h3 style="margin-bottom:4px;color:var(--text);">🎨 Theme / Developer Mode</h3>
+    <p style="font-size:13px;color:var(--sub);margin-bottom:16px;">Customize every color in the app.</p>
+    <label class="lbl" style="margin-top:0;">App Emoji</label>
+    <div id="emoji-picker" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;"></div>
+    <div id="color-rows"></div>
+    <div id="theme-preview" class="preview-box"></div>
+    <div class="grid2">
+      <button class="btn outline" onclick="resetTheme()">Reset</button>
+      <button class="btn" onclick="applyTheme()">Apply ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE PLAYLIST -->
+<div id="screen-create-playlist" class="screen">
+  <div class="topbar"><button class="back-btn" id="create-pl-back">←</button><h2>New Playlist</h2></div>
+  <div class="card">
+    <div style="display:flex;justify-content:center;margin-bottom:20px;">
+      <div id="pl-preview" style="width:80px;height:80px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:40px;"></div>
+    </div>
+    <label class="lbl" style="margin-top:0;">Playlist Name</label>
+    <input id="pl-name" class="inp" placeholder="e.g. Daily Words"/>
+    <label class="lbl">Pick Color</label>
+    <div id="pl-color-picker" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;"></div>
+    <label class="lbl">Pick Emoji</label>
+    <div id="pl-emoji-picker" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;"></div>
+    <button class="btn full" onclick="createPlaylist()">Create Playlist</button>
+  </div>
+</div>
+
+<!-- ADD WORD -->
+<div id="screen-add-word" class="screen">
+  <div class="topbar"><button class="back-btn" onclick="nav('home')">←</button><h2>Add Word</h2></div>
+  <div style="margin-bottom:16px;">
+    <label class="lbl" style="margin-top:0;">Saving to playlist</label>
+    <button id="pl-selector-btn" onclick="togglePlPicker()" style="width:100%;background:var(--card);border:2px solid var(--border);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;text-align:left;">
+      <span id="pl-selector-label" style="color:var(--sub);">Select a playlist…</span>
+      <span style="margin-left:auto;color:var(--sub);">▾</span>
+    </button>
+    <div id="pl-picker-dropdown" class="picker-dropdown hidden"></div>
+  </div>
+  <div class="card">
+    <div class="hint-box">🤖 Type pinyin <strong>or</strong> Chinese character — AI fills the rest!
+      <span id="ai-status" style="margin-left:8px;"></span></div>
+    <label class="lbl" style="margin-top:8px;">Chinese Character (汉字)</label>
+    <input id="inp-char" class="inp" placeholder="e.g. 你好" oninput="onFieldInput(this,'char')"/>
+    <label class="lbl">Pinyin</label>
+    <input id="inp-pinyin" class="inp" placeholder="e.g. nǐ hǎo" oninput="onFieldInput(this,'pinyin')"/>
+    <label class="lbl">English Meaning</label>
+    <input id="inp-english" class="inp" placeholder="e.g. Hello" oninput="onFieldInput(this,'english')"/>
+    <label class="lbl">Thai Meaning (ภาษาไทย)</label>
+    <input id="inp-thai" class="inp" placeholder="e.g. สวัสดี" oninput="onFieldInput(this,'thai')"/>
+    <div style="margin-top:16px;">
+      <button class="btn full" id="save-word-btn" onclick="saveWord()">Save Word</button>
+    </div>
+  </div>
+</div>
+
+<!-- PLAYLIST DETAIL -->
+<div id="screen-playlist" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="nav('home')">←</button>
+    <h2 id="pl-detail-title"></h2>
+    <button class="btn sm red" onclick="deletePlaylist()">🗑 Delete</button>
+  </div>
+  <div class="grid2" style="margin-bottom:28px;">
+    <button class="bigbtn" id="pl-add-word-btn" onclick="addWordToPlaylist()">
+      <span class="icon">✏️</span><span class="label">Add Word</span>
+    </button>
+    <button class="bigbtn" onclick="startPlaylistSession()" style="background:#8b5cf6;box-shadow:0 4px 16px #8b5cf655;">
+      <span class="icon">🎯</span><span class="label">Start Session</span>
+    </button>
+  </div>
+  <h3 id="pl-word-count" style="margin-bottom:12px;color:var(--text);"></h3>
+  <div id="pl-word-list"></div>
+</div>
+
+<!-- PICK SESSION -->
+<div id="screen-pick-session" class="screen">
+  <div class="topbar"><button class="back-btn" onclick="nav('home')">←</button><h2 id="session-title"></h2></div>
+  <div class="card">
+    <label class="lbl" style="margin-top:0;">Mode</label>
+    <div class="grid2" style="margin-bottom:20px;">
+      <button class="mode-btn" id="mode-flash" onclick="setMode('flash')">🃏 Flashcards</button>
+      <button class="mode-btn" id="mode-quiz" onclick="setMode('quiz')">🧠 Quiz</button>
+    </div>
+    <label class="lbl">Number of Questions</label>
+    <div id="count-buttons" style="margin-bottom:20px;"></div>
+    <button class="btn full" id="start-session-btn" onclick="startSession()" disabled>Start →</button>
+  </div>
+</div>
+
+<!-- FLASHCARD -->
+<div id="screen-flashcard" class="screen">
+  <div class="topbar"><button class="back-btn" onclick="nav('home')">←</button><h2 id="flash-title"></h2></div>
+  <div style="text-align:center;color:var(--sub);margin-bottom:8px;" id="flash-counter"></div>
+  <div class="prog-bar"><div class="prog-fill" id="flash-prog" style="background:var(--accent);"></div></div>
+  <div class="flashcard" id="flashcard" onclick="flipCard()">
+    <div id="flash-front">
+      <div class="tag" id="flash-face-label"></div>
+      <div id="flash-face-value" style="font-weight:900;text-align:center;"></div>
+      <div class="flip-hint">Tap to flip 👆</div>
+    </div>
+    <div id="flash-back" class="hidden">
+      <div id="flash-char" style="font-size:42px;font-weight:900;margin-bottom:6px;"></div>
+      <div id="flash-pinyin" class="pinyin-line" style="color:var(--accent);"></div>
+      <div id="flash-eng" class="eng-line"></div>
+      <div id="flash-thai" class="thai-line"></div>
+    </div>
+  </div>
+  <div id="flash-btns" class="grid2 hidden">
+    <button class="btn red full" onclick="markCard(false)">😅 Still learning</button>
+    <button class="btn green full" onclick="markCard(true)">✅ Know it!</button>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="screen-quiz" class="screen">
+  <div class="topbar"><button class="back-btn" onclick="nav('home')">←</button><h2 id="quiz-title"></h2></div>
+  <div style="text-align:center;color:var(--sub);margin-bottom:8px;" id="quiz-counter"></div>
+  <div class="prog-bar"><div class="prog-fill" id="quiz-prog" style="background:#8b5cf6;"></div></div>
+  <div class="card" style="text-align:center;margin-bottom:20px;padding:32px;">
+    <div class="tag" id="quiz-q-label"></div>
+    <div id="quiz-q-value" style="font-weight:900;"></div>
+    <div id="quiz-a-hint" style="margin-top:12px;font-size:13px;color:var(--sub);"></div>
+  </div>
+  <div id="quiz-choices"></div>
+</div>
+
+<!-- RESULTS -->
+<div id="screen-results" class="screen">
+  <div class="topbar"><h2>Session Complete 🎉</h2></div>
+  <div class="card" style="text-align:center;margin-bottom:20px;padding:32px;">
+    <div class="result-emoji" id="result-emoji"></div>
+    <div class="result-pct" id="result-pct" style="color:var(--text);"></div>
+    <div style="color:var(--sub);margin-top:4px;" id="result-score"></div>
+  </div>
+  <div id="result-weak"></div>
+  <button class="btn full" onclick="nav('home')" style="margin-top:8px;">🏠 Back to Home</button>
+</div>
+
+</div><!-- #app -->
+
+<script>
+// ── Firebase ──────────────────────────────────────────────────────────────────
+const FB_URL = "https://vocab-7b2a4-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+async function fbGet(path) {
+  const r = await fetch(`${FB_URL}/${path}.json`);
+  if(!r.ok) throw new Error("HTTP "+r.status);
+  return r.json();
+}
+async function fbSet(path, val) {
+  const r = await fetch(`${FB_URL}/${path}.json`, {
+    method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify(val)
+  });
+  if(!r.ok) throw new Error("HTTP "+r.status);
+}
+
+// ── State ─────────────────────────────────────────────────────────────────────
+const STORAGE_KEY = "chinesevocab_v5";
+const EMOJIS = ["📚","🌟","🔥","🎯","🐉","🌸","⚡","🎓","🍀","🦋","🎵","🌈","🎀","🏆","🦊","🌙"];
+const COLORS = ["#ef4444","#f97316","#eab308","#22c55e","#3b82f6","#8b5cf6","#ec4899","#14b8a6","#f43f5e","#06b6d4","#a855f7","#84cc16"];
+const FORMATS = [{q:"char",a:"english"},{q:"char",a:"thai"},{q:"english",a:"char"},{q:"thai",a:"char"}];
+const FACES = ["char","english","thai"];
+const genId = () => Math.random().toString(36).slice(2,9);
+const shuffle = a => [...a].sort(()=>Math.random()-.5);
+
+let DB = loadLocal();
+let currentScreen = "home";
+// session state
+let sessionWords=[], sessionMode="", sessionIdx=0, sessionResults=[], sessionAllWords=[];
+let flashFlipped=false, sessionFace="char";
+let quizQuestions=[], quizSelected=null;
+// playlist creation
+let newPlColor=COLORS[4], newPlEmoji=EMOJIS[0];
+let createPlReturnTo="home";
+// playlist detail
+let currentPl=null;
+// pick session
+let pickWords=[], pickAllWords=[], pickTitle="", pickMode=null, pickCount=10;
+// add word
+let selectedPlId=null;
+let aiTimer=null;
+// theme editing
+let editTheme={};
+
+function loadLocal(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY))||{playlists:[],words:[],progress:{},lastPlaylistId:null,theme:{},syncUser:null}; }
+  catch{ return {playlists:[],words:[],progress:{},lastPlaylistId:null,theme:{},syncUser:null}; }
+}
+function saveLocal(){ try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(DB)); }catch{} }
+function applyThemeVars(t){
+  const r=document.documentElement.style;
+  if(t.bg) r.setProperty('--bg',t.bg);
+  if(t.card) r.setProperty('--card',t.card);
+  if(t.text) r.setProperty('--text',t.text);
+  if(t.sub) r.setProperty('--sub',t.sub);
+  if(t.border) r.setProperty('--border',t.border);
+  if(t.accent) r.setProperty('--accent',t.accent);
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+function nav(screen, opts={}){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+screen).classList.add('active');
+  currentScreen=screen;
+  window.scrollTo(0,0);
+  if(screen==='home') renderHome();
+  if(screen==='settings') renderSettings();
+  if(screen==='create-playlist'){
+    createPlReturnTo=opts.returnTo||'home';
+    document.getElementById('create-pl-back').onclick=()=>nav(createPlReturnTo==='add-word'?'add-word':'home');
+    renderCreatePlaylist(true);
+  }
+  if(screen==='add-word') renderAddWord();
+  if(screen==='playlist'){ currentPl=opts.playlist||currentPl; renderPlaylist(); }
+  if(screen==='pick-session'){
+    pickWords=opts.words||[]; pickAllWords=opts.allWords||pickWords; pickTitle=opts.title||'';
+    pickMode=null; pickCount=Math.min(10,pickWords.length);
+    renderPickSession();
+  }
+}
+
+// ── Home ──────────────────────────────────────────────────────────────────────
+function renderHome(){
+  const t=DB.theme||{};
+  document.getElementById('home-title').textContent=(t.appEmoji||'🈶')+' Chinese Vocab';
+  const syncBtn=document.getElementById('btn-sync-now');
+  const lbl=document.getElementById('home-sync-label');
+  if(DB.syncUser){ lbl.innerHTML=`☁️ Synced as <strong>${DB.syncUser}</strong>`; lbl.style.color='var(--sub)'; syncBtn.style.display=''; }
+  else{ lbl.textContent='⚠️ No sync — go to ⚙️ Settings'; lbl.style.color='#f97316'; syncBtn.style.display='none'; }
+  document.getElementById('home-word-count').textContent=DB.words.length+' words';
+  document.getElementById('home-add-btn').style.background=t.accent||'#3b82f6';
+
+  const list=document.getElementById('playlist-list');
+  if(!DB.playlists.length){
+    list.innerHTML=`<div class="card" style="text-align:center;color:var(--sub);padding:32px;"><div style="font-size:40px;margin-bottom:8px;">📭</div>No playlists yet. Create one!</div>`;
+    return;
+  }
+  list.innerHTML='';
+  DB.playlists.forEach(pl=>{
+    const count=DB.words.filter(w=>w.playlistId===pl.id).length;
+    const btn=document.createElement('button');
+    btn.className='pl-item';
+    btn.innerHTML=`<div class="pl-icon" style="background:${pl.color}">${pl.emoji}</div>
+      <div><div style="font-weight:800;font-size:16px;color:var(--text)">${pl.name}</div>
+      <div style="font-size:13px;color:var(--sub)">${count} word${count!==1?'s':''}</div></div>
+      <div class="pl-arrow">›</div>`;
+    btn.onclick=()=>nav('playlist',{playlist:pl});
+    list.appendChild(btn);
+  });
+}
+
+async function syncNow(){
+  if(!DB.syncUser) return;
+  const lbl=document.getElementById('home-sync-label');
+  lbl.innerHTML='☁️ Syncing…';
+  try{ await cloudPush(); lbl.innerHTML=`☁️ Synced as <strong>${DB.syncUser}</strong> · ✅`; setTimeout(()=>renderHome(),2000); }
+  catch{ lbl.textContent='❌ Sync failed'; }
+}
+
+function quizAll(){
+  if(DB.words.length<3){ alert('Add at least 3 words first!'); return; }
+  nav('pick-session',{words:DB.words,allWords:DB.words,title:'All Words 🌍'});
+}
+
+// ── Settings ──────────────────────────────────────────────────────────────────
+function renderSettings(){
+  document.getElementById('sync-input').value=DB.syncUser||'';
+  document.getElementById('sync-push-btn').style.display=DB.syncUser?'':'none';
+  document.getElementById('sync-msg').textContent='';
+
+  // emoji picker
+  const ep=document.getElementById('emoji-picker');
+  ep.innerHTML='';
+  const curEmoji=(DB.theme||{}).appEmoji||'🈶';
+  EMOJIS.forEach(e=>{
+    const b=document.createElement('button');
+    b.className='emoji-btn';
+    b.textContent=e;
+    if(e===editTheme.appEmoji||(!editTheme.appEmoji&&e===curEmoji)) b.style.border='2px solid var(--accent)';
+    b.onclick=()=>{ editTheme.appEmoji=e; renderSettings(); updateThemePreview(); };
+    ep.appendChild(b);
+  });
+
+  // init editTheme
+  if(!Object.keys(editTheme).length){
+    const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+    const base=isDark?{bg:'#0f172a',card:'#1e293b',text:'#f1f5f9',sub:'#94a3b8',border:'#334155',accent:'#3b82f6',appEmoji:'🈶'}
+                     :{bg:'#f8fafc',card:'#ffffff',text:'#1e293b',sub:'#64748b',border:'#e2e8f0',accent:'#3b82f6',appEmoji:'🈶'};
+    editTheme=Object.assign({},base,DB.theme||{});
+  }
+
+  // color rows
+  const cr=document.getElementById('color-rows');
+  cr.innerHTML='';
+  [['Background','bg'],['Cards','card'],['Text','text'],['Subtitle','sub'],['Borders','border'],['Accent / Buttons','accent']].forEach(([label,key])=>{
+    cr.innerHTML+=`<div class="color-row">
+      <span style="font-weight:600;color:var(--text);font-size:15px;">${label}</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:32px;height:32px;border-radius:8px;background:${editTheme[key]};border:2px solid var(--border);"></div>
+        <input type="color" value="${editTheme[key]}" onchange="editTheme['${key}']=this.value;updateThemePreview();" style="width:40px;height:32px;border:none;background:none;cursor:pointer;padding:0;"/>
+        <span style="font-size:11px;color:var(--sub);font-family:monospace;">${editTheme[key]}</span>
+      </div>
+    </div>`;
+  });
+  updateThemePreview();
+}
+
+function updateThemePreview(){
+  const p=document.getElementById('theme-preview');
+  p.style.background=editTheme.bg||'var(--bg)';
+  p.innerHTML=`<div style="background:${editTheme.card};border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+    <div style="color:${editTheme.text};font-weight:800;font-size:16px;">${editTheme.appEmoji||'🈶'} Preview Card</div>
+    <div style="color:${editTheme.sub};font-size:13px;">Subtitle text looks like this</div>
+  </div>
+  <button style="background:${editTheme.accent};color:#fff;border:none;border-radius:12px;padding:10px 20px;font-weight:700;">Button</button>`;
+}
+
+function applyTheme(){
+  DB.theme=Object.assign({},editTheme);
+  saveLocal();
+  applyThemeVars(DB.theme);
+  if(DB.syncUser) cloudPush().catch(()=>{});
+  alert('Theme applied! ✅');
+  renderHome();
+}
+
+function resetTheme(){
+  const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  editTheme=isDark?{bg:'#0f172a',card:'#1e293b',text:'#f1f5f9',sub:'#94a3b8',border:'#334155',accent:'#3b82f6',appEmoji:'🈶'}
+                  :{bg:'#f8fafc',card:'#ffffff',text:'#1e293b',sub:'#64748b',border:'#e2e8f0',accent:'#3b82f6',appEmoji:'🈶'};
+  DB.theme={}; saveLocal(); applyThemeVars({});
+  renderSettings();
+}
+
+async function connectSync(){
+  const u=document.getElementById('sync-input').value.trim();
+  if(!u){ alert('Please enter a sync code.'); return; }
+  const msg=document.getElementById('sync-msg');
+  const btn=document.getElementById('sync-connect-btn');
+  btn.disabled=true; msg.style.color='var(--sub)'; msg.textContent='Connecting to Firebase…';
+  try{
+    const cloud=await fbGet(`users/${u}`);
+    if(cloud&&(cloud.playlists?.length||cloud.words?.length)){
+      DB.playlists=cloud.playlists||[]; DB.words=cloud.words||[]; DB.progress=cloud.progress||{};
+      DB.syncUser=u; saveLocal();
+      msg.style.color='#22c55e'; msg.textContent=`✅ Loaded ${DB.words.length} words from cloud!`;
+    } else {
+      DB.syncUser=u; saveLocal(); await cloudPush();
+      msg.style.color='#22c55e'; msg.textContent=`✅ Sync created! Use "${u}" on other devices.`;
+    }
+    document.getElementById('sync-push-btn').style.display='';
+    document.getElementById('btn-sync-now').style.display='';
+  } catch(e){
+    msg.style.color='#ef4444'; msg.textContent='❌ Connection failed: '+e.message;
+  }
+  btn.disabled=false;
+}
+
+async function pushToCloud(){
+  const msg=document.getElementById('sync-msg');
+  msg.style.color='var(--sub)'; msg.textContent='Pushing…';
+  try{ await cloudPush(); msg.style.color='#22c55e'; msg.textContent='✅ Pushed to Firebase!'; }
+  catch(e){ msg.style.color='#ef4444'; msg.textContent='❌ Failed: '+e.message; }
+}
+
+async function cloudPush(){
+  await fbSet(`users/${DB.syncUser}`,{playlists:DB.playlists,words:DB.words,progress:DB.progress});
+}
+
+// ── Create Playlist ───────────────────────────────────────────────────────────
+function renderCreatePlaylist(resetFields=false){
+  if(resetFields){
+    newPlColor=COLORS[4]; newPlEmoji=EMOJIS[0];
+    document.getElementById('pl-name').value='';
+  }
+  updatePlPreview();
+
+  const cp=document.getElementById('pl-color-picker');
+  cp.innerHTML='';
+  COLORS.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='color-dot';
+    b.style.background=c;
+    b.style.border=c===newPlColor?'3px solid var(--text)':'3px solid transparent';
+    b.onclick=()=>{ newPlColor=c; updatePlPreview(); renderCreatePlaylist(); };
+    cp.appendChild(b);
+  });
+
+  const ep=document.getElementById('pl-emoji-picker');
+  ep.innerHTML='';
+  EMOJIS.forEach(e=>{
+    const b=document.createElement('button');
+    b.className='emoji-btn';
+    b.textContent=e;
+    if(e===newPlEmoji) b.style.border='2px solid var(--accent)';
+    b.onclick=()=>{ newPlEmoji=e; updatePlPreview(); renderCreatePlaylist(); };
+    ep.appendChild(b);
+  });
+}
+function updatePlPreview(){
+  const p=document.getElementById('pl-preview');
+  p.style.background=newPlColor;
+  p.textContent=newPlEmoji;
+}
+function createPlaylist(){
+  const name=document.getElementById('pl-name').value.trim();
+  if(!name){ alert('Please enter a playlist name.'); return; }
+  const pl={id:genId(),name,color:newPlColor,emoji:newPlEmoji};
+  DB.playlists.push(pl); DB.lastPlaylistId=pl.id;
+  saveLocal();
+  if(DB.syncUser) cloudPush().catch(()=>{});
+  if(createPlReturnTo==='add-word') nav('add-word');
+  else nav('playlist',{playlist:pl});
+}
+
+// ── Add Word ──────────────────────────────────────────────────────────────────
+function renderAddWord(){
+  if(!DB.playlists.length){
+    document.getElementById('pl-selector-btn').style.display='none';
+    return;
+  }
+  document.getElementById('pl-selector-btn').style.display='';
+  selectedPlId=DB.lastPlaylistId||DB.playlists[0]?.id||null;
+  updatePlSelector();
+  document.getElementById('inp-char').value='';
+  document.getElementById('inp-pinyin').value='';
+  document.getElementById('inp-english').value='';
+  document.getElementById('inp-thai').value='';
+  document.getElementById('ai-status').textContent='';
+  setHighlight(false);
+  const btn=document.getElementById('save-word-btn');
+  const pl=DB.playlists.find(p=>p.id===selectedPlId);
+  btn.style.background=pl?.color||'var(--accent)';
+  btn.style.borderColor=pl?.color||'var(--accent)';
+}
+
+function updatePlSelector(){
+  const pl=DB.playlists.find(p=>p.id===selectedPlId);
+  const lbl=document.getElementById('pl-selector-label');
+  if(pl) lbl.innerHTML=`<div style="display:flex;align-items:center;gap:12px;"><div style="width:36px;height:36px;border-radius:10px;background:${pl.color};display:flex;align-items:center;justify-content:center;font-size:18px;">${pl.emoji}</div><span style="font-weight:700;color:var(--text);font-size:16px;">${pl.name}</span></div>`;
+  else lbl.innerHTML=`<span style="color:var(--sub);">Select a playlist…</span>`;
+}
+
+function togglePlPicker(){
+  const d=document.getElementById('pl-picker-dropdown');
+  if(d.classList.contains('hidden')){ buildPlPicker(); d.classList.remove('hidden'); }
+  else d.classList.add('hidden');
+}
+
+function buildPlPicker(){
+  const d=document.getElementById('pl-picker-dropdown');
+  d.innerHTML='';
+  DB.playlists.forEach(pl=>{
+    const b=document.createElement('button');
+    b.className='picker-item'+(pl.id===selectedPlId?' active':'');
+    b.innerHTML=`<div style="width:32px;height:32px;border-radius:8px;background:${pl.color};display:flex;align-items:center;justify-content:center;font-size:16px;">${pl.emoji}</div>
+      <span>${pl.name}</span>${pl.id===selectedPlId?'<span style="margin-left:auto;">✓</span>':''}`;
+    b.onclick=()=>{ selectedPlId=pl.id; DB.lastPlaylistId=pl.id; saveLocal(); updatePlSelector(); d.classList.add('hidden');
+      const btn=document.getElementById('save-word-btn'); btn.style.background=pl.color; btn.style.borderColor=pl.color; };
+    d.appendChild(b);
+  });
+  const nb=document.createElement('button');
+  nb.className='picker-item';
+  nb.style.borderTop='1px solid var(--border)';
+  nb.style.color='var(--accent)';
+  nb.innerHTML='+ Create new playlist';
+  nb.onclick=()=>{ d.classList.add('hidden'); nav('create-playlist',{returnTo:'add-word'}); };
+  d.appendChild(nb);
+}
+
+function setHighlight(on){
+  ['inp-char','inp-pinyin','inp-english','inp-thai'].forEach(id=>{
+    document.getElementById(id).classList.toggle('hi',on);
+  });
+}
+
+function detectType(val){
+  // Chinese characters
+  if(/[\u4e00-\u9fff\u3400-\u4dbf]/.test(val)) return 'char';
+  // Thai characters
+  if(/[\u0e00-\u0e7f]/.test(val)) return 'thai';
+  // Pinyin with tone marks = has special accented vowels
+  if(/[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(val)) return 'pinyin';
+  // Otherwise treat as English
+  return 'english';
+}
+
+function onFieldInput(el, type){
+  setHighlight(false);
+  clearTimeout(aiTimer);
+  const val=el.value.trim();
+  if(!val) return;
+  document.getElementById('ai-status').style.color='var(--accent)';
+  document.getElementById('ai-status').textContent='';
+  // auto-detect language from what was typed, override the field type
+  const detected=detectType(val);
+  aiTimer=setTimeout(()=>doAILookup(val, detected), 800);
+}
+
+async function doAILookup(val, type){
+  const status=document.getElementById('ai-status');
+  status.style.color='var(--accent)'; status.textContent='Looking up…⏳';
+  try{
+    let char='', pinyin='', english='', thai='';
+    const v=val.trim();
+
+    if(type==='char'){
+      // ── Character input: translate zh→en, then en→th ──
+      const r1=await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(v)}&langpair=zh-CN|en`);
+      const d1=await r1.json();
+      english=(d1.responseData?.translatedText||'').trim();
+      if(!english||english.toLowerCase()===v.toLowerCase()) throw new Error('Translation failed');
+      char=v;
+      // ── Get pinyin via Google Translate romanization ──
+      try{
+        const gtUrl=`https://translate.googleapis.com/translate_a/single?client=gtx&sl=zh-CN&tl=en&hl=en&dt=rm&dt=t&q=${encodeURIComponent(v)}`;
+        const pp=await fetch(gtUrl);
+        const pd=await pp.json();
+        // romanization is in pd[0] entries as 3rd element, or pd[2] for sentence-level
+        let raw='';
+        if(pd[0]&&Array.isArray(pd[0])){
+          raw=pd[0].map(seg=>seg[3]||'').filter(Boolean).join(' ').trim();
+        }
+        if(!raw&&pd[2]) raw=String(pd[2]).trim();
+        // clean up: remove extra spaces
+        pinyin=raw.replace(/\s+/g,' ').trim();
+      }catch{ pinyin=''; }
+
+      // en→th
+      const shortEng=english.split(/[,;(]/)[0].trim();
+      const r2=await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(shortEng)}&langpair=en|th`);
+      const d2=await r2.json();
+      thai=(d2.responseData?.translatedText||'').trim();
+
+    } else {
+      // ── Pinyin input: convert pinyin→zh using translate API, then get English ──
+      // Step 1: translate pinyin text as if it's Chinese input (won't work well)
+      // Better: search pinyin via a dedicated endpoint
+      // Use mdbg.net search scrape via allorigins proxy
+      const searchUrl=`https://www.mdbg.net/chinese/dictionary?page=1&pagesize=1&searchp=pinyin&search=${encodeURIComponent(v)}`;
+      const proxyUrl=`https://api.allorigins.win/get?url=${encodeURIComponent(searchUrl)}`;
+      const pr=await fetch(proxyUrl);
+      const pd=await pr.json();
+      const html=pd.contents||'';
+
+      // parse the result — extract first Chinese word and definition
+      const charMatch=html.match(/class="hanzi"[^>]*>([^<]+)</);
+      const defMatch=html.match(/class="defs"[^>]*>([^<]+)</);
+      const pinyinMatch=html.match(/class="pinyin"[^>]*><span[^>]*>([^<]+)</);
+
+      char=charMatch?charMatch[1].trim():'';
+      english=defMatch?defMatch[1].trim():'';
+      pinyin=pinyinMatch?pinyinMatch[1].trim():v;
+
+      if(!char||!english) throw new Error('Word not found. Try typing the Chinese character directly.');
+
+      // en→th
+      const shortEng=english.split(/[,;/]/)[0].trim();
+      const r2=await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(shortEng)}&langpair=en|th`);
+      const d2=await r2.json();
+      thai=(d2.responseData?.translatedText||'').trim();
+    }
+
+    document.getElementById('inp-char').value=char;
+    document.getElementById('inp-pinyin').value=pinyin;
+    document.getElementById('inp-english').value=english;
+    document.getElementById('inp-thai').value=thai;
+    setHighlight(true);
+    status.style.color='#22c55e'; status.textContent='✅ Auto-filled! Edit if needed.';
+
+  }catch(e){
+    status.style.color='#ef4444'; status.textContent='❌ '+e.message;
+  }
+}
+
+function saveWord(){
+  if(!selectedPlId){ alert('Please select a playlist.'); return; }
+  const char=document.getElementById('inp-char').value.trim();
+  const pinyin=document.getElementById('inp-pinyin').value.trim();
+  const english=document.getElementById('inp-english').value.trim();
+  const thai=document.getElementById('inp-thai').value.trim();
+  if(!char||!pinyin||!english||!thai){ alert('Please fill in all 4 fields.'); return; }
+  DB.words.push({id:genId(),playlistId:selectedPlId,char,pinyin,english,thai});
+  DB.lastPlaylistId=selectedPlId; saveLocal();
+  if(DB.syncUser) cloudPush().catch(()=>{});
+  document.getElementById('inp-char').value='';
+  document.getElementById('inp-pinyin').value='';
+  document.getElementById('inp-english').value='';
+  document.getElementById('inp-thai').value='';
+  setHighlight(false);
+  document.getElementById('ai-status').textContent='';
+  const btn=document.getElementById('save-word-btn');
+  btn.textContent='✅ Saved! Add another →';
+  setTimeout(()=>btn.textContent='Save Word',1500);
+}
+
+// ── Playlist Detail ───────────────────────────────────────────────────────────
+function renderPlaylist(){
+  const pl=currentPl;
+  document.getElementById('pl-detail-title').textContent=pl.emoji+' '+pl.name;
+  const addBtn=document.getElementById('pl-add-word-btn');
+  addBtn.style.background=pl.color; addBtn.style.boxShadow=`0 4px 16px ${pl.color}55`;
+  const words=DB.words.filter(w=>w.playlistId===pl.id);
+  document.getElementById('pl-word-count').textContent=words.length+' Word'+(words.length!==1?'s':'');
+  const list=document.getElementById('pl-word-list');
+  if(!words.length){ list.innerHTML=`<div class="card" style="text-align:center;color:var(--sub);padding:32px;">No words yet. Add some!</div>`; return; }
+  list.innerHTML='';
+  words.forEach(w=>{
+    const c=document.createElement('div');
+    c.className='card word-item';
+    c.innerHTML=`<div><div class="weak-char" style="color:var(--text);">${w.char}</div>
+      <div style="font-size:13px;color:var(--sub);">${w.pinyin} · ${w.english} · ${w.thai}</div></div>
+      <button class="del-btn" onclick="deleteWord('${w.id}')">🗑</button>`;
+    list.appendChild(c);
+  });
+}
+
+function addWordToPlaylist(){
+  DB.lastPlaylistId=currentPl.id; saveLocal(); nav('add-word');
+}
+
+function deleteWord(id){
+  DB.words=DB.words.filter(w=>w.id!==id); saveLocal();
+  if(DB.syncUser) cloudPush().catch(()=>{});
+  renderPlaylist();
+}
+
+function deletePlaylist(){
+  if(!confirm(`Delete "${currentPl.name}" and all its words? Cannot be undone.`)) return;
+  DB.playlists=DB.playlists.filter(p=>p.id!==currentPl.id);
+  DB.words=DB.words.filter(w=>w.playlistId!==currentPl.id);
+  saveLocal();
+  if(DB.syncUser) cloudPush().catch(()=>{});
+  nav('home');
+}
+
+function startPlaylistSession(){
+  const words=DB.words.filter(w=>w.playlistId===currentPl.id);
+  if(words.length<3){ alert('Add at least 3 words first!'); return; }
+  nav('pick-session',{words,allWords:DB.words,title:currentPl.emoji+' '+currentPl.name});
+}
+
+// ── Pick Session ──────────────────────────────────────────────────────────────
+function renderPickSession(){
+  document.getElementById('session-title').textContent=pickTitle;
+  document.getElementById('mode-flash').className='mode-btn';
+  document.getElementById('mode-quiz').className='mode-btn';
+  document.getElementById('start-session-btn').disabled=true;
+  const cb=document.getElementById('count-buttons');
+  cb.innerHTML='';
+  [...new Set([5,10,20,pickWords.length])].filter(n=>n<=pickWords.length).forEach(n=>{
+    const b=document.createElement('button');
+    b.className='count-btn'+(pickCount===n?' active':'');
+    b.textContent=n===pickWords.length?`All (${n})`:n;
+    b.onclick=()=>{ pickCount=n; renderPickSession(); };
+    cb.appendChild(b);
+  });
+}
+
+function setMode(m){
+  pickMode=m;
+  document.getElementById('mode-flash').className='mode-btn'+(m==='flash'?' active':'');
+  document.getElementById('mode-quiz').className='mode-btn'+(m==='quiz'?' active':'');
+  document.getElementById('start-session-btn').disabled=false;
+}
+
+function startSession(){
+  if(!pickMode) return;
+  sessionWords=shuffle(pickWords).slice(0,Math.min(pickCount,pickWords.length));
+  sessionAllWords=pickAllWords;
+  sessionMode=pickMode; sessionIdx=0; sessionResults=[];
+  if(pickMode==='flash') startFlash();
+  else startQuiz();
+}
+
+// ── Flashcard ─────────────────────────────────────────────────────────────────
+function startFlash(){
+  nav('flashcard');
+  document.getElementById('flash-title').textContent=pickTitle;
+  flashFlipped=false;
+  sessionFace=FACES[Math.floor(Math.random()*3)];
+  renderFlash();
+}
+
+function renderFlash(){
+  const w=sessionWords[sessionIdx];
+  const total=sessionWords.length;
+  document.getElementById('flash-counter').textContent=`${sessionIdx+1} / ${total}`;
+  document.getElementById('flash-prog').style.width=`${(sessionIdx/total)*100}%`;
+  document.getElementById('flash-front').classList.remove('hidden');
+  document.getElementById('flash-back').classList.add('hidden');
+  document.getElementById('flash-btns').classList.add('hidden');
+  flashFlipped=false;
+  const faceVal={char:w.char,english:w.english,thai:w.thai}[sessionFace];
+  const faceLbl={char:'汉字',english:'English',thai:'Thai'}[sessionFace];
+  document.getElementById('flash-face-label').textContent=faceLbl;
+  const fv=document.getElementById('flash-face-value');
+  fv.textContent=faceVal;
+  fv.style.fontSize=sessionFace==='char'?'52px':'28px';
+  fv.style.fontWeight='900';
+}
+
+function flipCard(){
+  if(flashFlipped) return;
+  flashFlipped=true;
+  const w=sessionWords[sessionIdx];
+  document.getElementById('flash-front').classList.add('hidden');
+  document.getElementById('flash-back').classList.remove('hidden');
+  document.getElementById('flash-btns').classList.remove('hidden');
+  document.getElementById('flash-char').textContent=w.char;
+  document.getElementById('flash-pinyin').textContent=w.pinyin;
+  document.getElementById('flash-eng').textContent=w.english;
+  document.getElementById('flash-thai').textContent=w.thai;
+}
+
+function markCard(knew){
+  const w=sessionWords[sessionIdx];
+  if(!DB.progress[w.id]) DB.progress[w.id]={right:0,wrong:0};
+  if(knew) DB.progress[w.id].right++; else DB.progress[w.id].wrong++;
+  saveLocal();
+  sessionResults.push({wordId:w.id,knew,word:w});
+  if(sessionIdx+1>=sessionWords.length){ showResults(); return; }
+  sessionIdx++;
+  sessionFace=FACES[Math.floor(Math.random()*3)];
+  renderFlash();
+}
+
+// ── Quiz ──────────────────────────────────────────────────────────────────────
+function startQuiz(){
+  nav('quiz');
+  document.getElementById('quiz-title').textContent=pickTitle;
+  quizQuestions=sessionWords.map(word=>{
+    const fmt=FORMATS[Math.floor(Math.random()*FORMATS.length)];
+    const correct=word[fmt.a];
+    const others=shuffle(sessionAllWords.filter(w=>w.id!==word.id&&w[fmt.a]!==correct));
+    const fallback=shuffle(sessionAllWords.filter(w=>w.id!==word.id));
+    const src=others.length>=2?others:fallback;
+    const wrongs=src.slice(0,2).map(w=>w[fmt.a]);
+    while(wrongs.length<2) wrongs.push('—');
+    return {word,fmt,correct,choices:shuffle([correct,...wrongs])};
+  });
+  sessionIdx=0; quizSelected=null;
+  renderQuiz();
+}
+
+function renderQuiz(){
+  const q=quizQuestions[sessionIdx];
+  const total=quizQuestions.length;
+  document.getElementById('quiz-counter').textContent=`${sessionIdx+1} / ${total}`;
+  document.getElementById('quiz-prog').style.width=`${(sessionIdx/total)*100}%`;
+  const qLbl={char:'汉字',english:'English',thai:'Thai'}[q.fmt.q];
+  const aLbl={char:'汉字',english:'English',thai:'Thai'}[q.fmt.a];
+  document.getElementById('quiz-q-label').textContent=qLbl;
+  const qv=document.getElementById('quiz-q-value');
+  qv.textContent=q.word[q.fmt.q];
+  qv.style.fontSize=q.fmt.q==='char'?'52px':'24px';
+  qv.style.fontWeight='900';
+  document.getElementById('quiz-a-hint').textContent=`Choose the correct ${aLbl}:`;
+  const ch=document.getElementById('quiz-choices');
+  ch.innerHTML='';
+  q.choices.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='choice-btn';
+    b.textContent=c;
+    b.style.fontSize=q.fmt.a==='char'?'28px':'16px';
+    b.onclick=()=>pickAnswer(c);
+    ch.appendChild(b);
+  });
+  quizSelected=null;
+}
+
+function pickAnswer(ch){
+  if(quizSelected!==null) return;
+  quizSelected=ch;
+  const q=quizQuestions[sessionIdx];
+  const knew=ch===q.correct;
+  if(!DB.progress[q.word.id]) DB.progress[q.word.id]={right:0,wrong:0};
+  if(knew) DB.progress[q.word.id].right++; else DB.progress[q.word.id].wrong++;
+  saveLocal();
+  // highlight
+  document.querySelectorAll('.choice-btn').forEach(b=>{
+    if(b.textContent===q.correct) b.classList.add('correct');
+    else if(b.textContent===ch) b.classList.add('wrong');
+  });
+  setTimeout(()=>{
+    sessionResults.push({wordId:q.word.id,knew,word:q.word});
+    if(sessionIdx+1>=quizQuestions.length){ showResults(); return; }
+    sessionIdx++; renderQuiz();
+  },900);
+}
+
+// ── Results ───────────────────────────────────────────────────────────────────
+function showResults(){
+  nav('results');
+  const total=sessionResults.length;
+  const correct=sessionResults.filter(r=>r.knew).length;
+  const pct=Math.round((correct/total)*100);
+  document.getElementById('result-emoji').textContent=pct>=80?'🏆':pct>=50?'👍':'💪';
+  document.getElementById('result-pct').textContent=pct+'%';
+  document.getElementById('result-score').textContent=`${correct} / ${total} correct`;
+  const weak=sessionResults.filter(r=>!r.knew).map(r=>r.word).filter(Boolean);
+  const rw=document.getElementById('result-weak');
+  if(!weak.length){ rw.innerHTML=''; return; }
+  rw.innerHTML=`<h3 style="color:var(--text);margin-bottom:12px;">😅 Words to review (${weak.length})</h3>`;
+  weak.forEach(w=>{
+    const c=document.createElement('div');
+    c.className='card word-item';
+    c.innerHTML=`<div><div class="weak-char" style="color:var(--text);">${w.char}</div>
+      <div style="font-size:13px;color:var(--sub);">${w.pinyin} · ${w.english} · ${w.thai}</div></div>`;
+    rw.appendChild(c);
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+applyThemeVars(DB.theme||{});
+renderHome();
+</script>
+</body>
+</html>
