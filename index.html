@@ -176,13 +176,22 @@ input.inp:focus,input.inp.hi{border-color:var(--accent);}
 <div id="screen-pick-session" class="screen">
   <div class="topbar"><button class="back-btn" onclick="nav('home')">←</button><h2 id="session-title"></h2></div>
   <div class="card">
-    <label class="lbl" style="margin-top:0;">Mode</label>
-    <div class="grid2" style="margin-bottom:20px;">
-      <button class="mode-btn" id="mode-flash" onclick="setMode('flash')">🃏 Flashcards</button>
-      <button class="mode-btn" id="mode-quiz" onclick="setMode('quiz')">🧠 Quiz</button>
+    <div id="mode-section">
+      <label class="lbl" style="margin-top:0;">Mode</label>
+      <div class="grid2" style="margin-bottom:20px;">
+        <button class="mode-btn" id="mode-flash" onclick="setMode('flash')">🃏 Flashcards</button>
+        <button class="mode-btn" id="mode-quiz" onclick="setMode('quiz')">🧠 Quiz</button>
+      </div>
     </div>
-    <label class="lbl">Number of Questions</label>
-    <div id="count-buttons" style="margin-bottom:20px;"></div>
+    <label class="lbl" id="count-label">Number of Questions</label>
+    <div id="count-buttons" style="margin-bottom:12px;display:flex;flex-wrap:wrap;"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+      <span style="color:var(--sub);font-size:14px;">Or type:</span>
+      <input id="custom-count" type="number" min="1" class="inp" placeholder="e.g. 15"
+        style="width:100px;padding:10px 12px;font-size:16px;"
+        oninput="onCustomCount(this)"/>
+      <span id="custom-count-hint" style="font-size:13px;color:var(--sub);"></span>
+    </div>
     <button class="btn full" id="start-session-btn" onclick="startSession()" disabled>Start →</button>
   </div>
 </div>
@@ -485,12 +494,11 @@ async function syncNow(){
 
 function quickStart(mode){
   if(DB.words.length<3){ alert('Add at least 3 words first!'); return; }
-  sessionWords=shuffle(DB.words);
-  sessionAllWords=DB.words;
-  sessionMode=mode; sessionIdx=0; sessionResults=[];
-  pickTitle='All Words 🌍';
-  if(mode==='flash') startFlash();
-  else startQuiz();
+  // go to pick session but with mode pre-selected, skip mode selection
+  pickWords=DB.words; pickAllWords=DB.words;
+  pickTitle='All Words 🌍'; pickMode=mode;
+  pickCount=Math.min(10,DB.words.length);
+  nav('pick-session',{words:DB.words,allWords:DB.words,title:'All Words 🌍'});
 }
 
 function quizAll(){
@@ -651,10 +659,41 @@ function startPlaylistSession(){ const words=DB.words.filter(w=>w.playlistId===c
 // ── Pick Session ──────────────────────────────────────────────────────────────
 function renderPickSession(){
   document.getElementById('session-title').textContent=pickTitle;
-  document.getElementById('mode-flash').className='mode-btn'; document.getElementById('mode-quiz').className='mode-btn';
-  document.getElementById('start-session-btn').disabled=true;
+  // hide mode section if mode already chosen (from home buttons)
+  const modeSection=document.getElementById('mode-section');
+  if(pickMode){
+    modeSection.classList.add('hidden');
+    document.getElementById('start-session-btn').disabled=false;
+  } else {
+    modeSection.classList.remove('hidden');
+    document.getElementById('mode-flash').className='mode-btn';
+    document.getElementById('mode-quiz').className='mode-btn';
+    document.getElementById('start-session-btn').disabled=true;
+  }
+  document.getElementById('custom-count').value='';
+  document.getElementById('custom-count-hint').textContent=`max ${pickWords.length}`;
   const cb=document.getElementById('count-buttons'); cb.innerHTML='';
-  [...new Set([5,10,20,pickWords.length])].filter(n=>n<=pickWords.length).forEach(n=>{ const b=document.createElement('button'); b.className='count-btn'+(pickCount===n?' active':''); b.textContent=n===pickWords.length?`All (${n})`:n; b.onclick=()=>{ pickCount=n; renderPickSession(); }; cb.appendChild(b); });
+  [...new Set([5,10,15,20,pickWords.length])].filter(n=>n<=pickWords.length).forEach(n=>{
+    const b=document.createElement('button'); b.className='count-btn'+(pickCount===n?' active':'');
+    b.textContent=n===pickWords.length?`All (${n})`:n;
+    b.onclick=()=>{ pickCount=n; document.getElementById('custom-count').value=''; renderPickSession(); };
+    cb.appendChild(b);
+  });
+}
+
+function onCustomCount(el){
+  const val=parseInt(el.value);
+  const max=pickWords.length;
+  if(val>=1&&val<=max){
+    pickCount=val;
+    // deselect preset buttons
+    document.querySelectorAll('.count-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('start-session-btn').disabled=pickMode?false:true;
+    document.getElementById('custom-count-hint').textContent=`✅ ${val} questions`;
+  } else if(val>max){
+    el.value=max; pickCount=max;
+    document.getElementById('custom-count-hint').textContent=`max is ${max}`;
+  }
 }
 function setMode(m){ pickMode=m; document.getElementById('mode-flash').className='mode-btn'+(m==='flash'?' active':''); document.getElementById('mode-quiz').className='mode-btn'+(m==='quiz'?' active':''); document.getElementById('start-session-btn').disabled=false; }
 function startSession(){ if(!pickMode) return; sessionWords=shuffle(pickWords).slice(0,Math.min(pickCount,pickWords.length)); sessionAllWords=pickAllWords; sessionMode=pickMode; sessionIdx=0; sessionResults=[]; if(pickMode==='flash') startFlash(); else startQuiz(); }
