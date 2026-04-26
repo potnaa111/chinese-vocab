@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<meta name="theme-color" content="#0f172a"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Chinese Vocab"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon.png"/>
 <title>🈶 Chinese Vocab</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -735,6 +742,11 @@ function pickAnswer(ch){ if(quizSelected!==null) return; quizSelected=ch; const 
 
 // ── Results ───────────────────────────────────────────────────────────────────
 function showResults(){ nav('results'); const total=sessionResults.length; const correct=sessionResults.filter(r=>r.knew).length; const pct=Math.round((correct/total)*100); document.getElementById('result-emoji').textContent=pct>=80?'🏆':pct>=50?'👍':'💪'; document.getElementById('result-pct').textContent=pct+'%'; document.getElementById('result-score').textContent=`${correct} / ${total} correct`; const weak=sessionResults.filter(r=>!r.knew).map(r=>r.word).filter(Boolean); const rw=document.getElementById('result-weak'); if(!weak.length){ rw.innerHTML=''; return; } rw.innerHTML=`<h3 style="color:var(--text);margin-bottom:12px;">😅 Review (${weak.length})</h3>`; weak.forEach(w=>{ const c=document.createElement('div'); c.className='card word-item'; c.innerHTML=`<div><div style="font-size:24px;font-weight:900;color:var(--text);">${w.char}</div><div style="font-size:13px;color:var(--sub);">${w.pinyin} · ${w.english} · ${w.thai}</div></div>`; rw.appendChild(c); }); }
+
+// ── PWA Service Worker ────────────────────────────────────────────────────────
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 applyThemeVars(DB.theme||{});
